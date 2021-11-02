@@ -1,7 +1,7 @@
 # DockerLanguageDetect
 Container for py-langid.
 
-Accepts a json get/post request in the format
+Accepts a json get/post on port 5500 on the /api path, with the request message format:
 
 { "Comment" : "some text in your specific language" }
 
