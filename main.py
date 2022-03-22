@@ -1,9 +1,14 @@
+import fasttext
 from flask import Flask, request, jsonify
 import re
-app = Flask(__name__)
-from langid.langid import LanguageIdentifier, model
 
-@app.route('/api', methods=['GET', 'POST'])
+app = Flask(__name__)
+class Handler:
+    model = None
+    tokenizer = None
+handle = Handler()
+
+@app.route('/language/api', methods=['GET', 'POST'])
 def add_message():
     content = request.json
     code = content['Comment']
@@ -11,16 +16,28 @@ def add_message():
     code = code.rstrip()
     code = code.replace("/", "")
     data = {}
-    data['Language'] = "eng"
-    data['Probability'] = 1.0
-    if len(code)>0:
-        identifier = LanguageIdentifier.from_modelstring(model, norm_probs=True)
-        classify = identifier.classify(code)
-        data['Language'] = classify[0]
-        data['Probability'] = classify[1]
+    data['Language'] = "None"
+    data['Probability'] = 0.0
+    try:
+        if len(code)>0:
+            language = handle.model.predict(code)
+            if language!=None and len(language[0])>0:
+                languageResult = language[0][0].replace('__label__', '')
+                print(language)
+                print(language)
+                data['Language'] = languageResult
+                data['Probability'] = language[1][0]
+    except:
+        data['Language'] = "None"
+        data['Probability'] = 0.0
     return jsonify(data)
 
+def remove_prefix(text, prefix):
+    return text[text.startswith(prefix) and len(prefix):]
+
 def main():
+    model = fasttext.load_model("lid.176.bin")
+    handle.model = model
     app.run(host='0.0.0.0', debug=True, port=5500)
     pass
 
