@@ -1,5 +1,6 @@
 # DockerLanguageDetect
-Container for py-langid.
+Container for fasttext language classification. We use the fasttext model for language classificatio from :
+https://fasttext.cc/docs/en/language-identification.html and wrap it in a simple http wrapper.
 
 Accepts a json get/post on port 5500 on the /language/api path, with the request message format:
 
@@ -19,3 +20,6 @@ curl --header "Content-Type: application/json" --request POST --data '{"Comment"
   "Language": "en", 
   "Probability": 0.9999998731162608
 }
+
+## Docker
+docker run --publish 5500:5500 d9211/dockerlanguagedetect:v4
